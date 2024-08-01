@@ -4,7 +4,9 @@ import Papa from 'papaparse';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Plus, Download } from "lucide-react";
+import { Trash2, Plus, Download, Upload, FileSpreadsheet } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const CSVEditor = () => {
   const [csvData, setCsvData] = useState([]);
@@ -54,58 +56,81 @@ const CSVEditor = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">CSV Editor</h1>
-      <div {...getRootProps()} className="border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4 text-center cursor-pointer">
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p>Drop the CSV file here ...</p>
-        ) : (
-          <p>Drag 'n' drop a CSV file here, or click to select one</p>
-        )}
-      </div>
+    <div className="container mx-auto p-4 max-w-5xl">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold flex items-center">
+            <FileSpreadsheet className="mr-2 h-6 w-6 text-primary" />
+            CSV Editor
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            {...getRootProps()}
+            className="border-2 border-dashed border-primary/50 rounded-lg p-12 mb-4 text-center cursor-pointer transition-colors hover:border-primary"
+          >
+            <input {...getInputProps()} />
+            <Upload className="mx-auto h-12 w-12 text-primary mb-4" />
+            {isDragActive ? (
+              <p className="text-lg font-medium">Drop the CSV file here ...</p>
+            ) : (
+              <p className="text-lg font-medium">Drag 'n' drop a CSV file here, or click to select one</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
       {csvData.length > 0 && (
-        <>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {headers.map((header, index) => (
-                    <TableHead key={index}>{header}</TableHead>
-                  ))}
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {csvData.map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <TableCell key={cellIndex}>
-                        <Input
-                          value={cell}
-                          onChange={(e) => handleCellEdit(rowIndex, cellIndex, e.target.value)}
-                        />
-                      </TableCell>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold flex items-center justify-between">
+              <span>CSV Data</span>
+              <Badge variant="secondary">{csvData.length} rows</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {headers.map((header, index) => (
+                      <TableHead key={index} className="font-bold">{header}</TableHead>
                     ))}
-                    <TableCell>
-                      <Button variant="destructive" size="icon" onClick={() => deleteRow(rowIndex)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="mt-4 flex justify-between">
-            <Button onClick={addRow}>
-              <Plus className="mr-2 h-4 w-4" /> Add Row
-            </Button>
-            <Button onClick={downloadCSV}>
-              <Download className="mr-2 h-4 w-4" /> Download CSV
-            </Button>
-          </div>
-        </>
+                </TableHeader>
+                <TableBody>
+                  {csvData.map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {row.map((cell, cellIndex) => (
+                        <TableCell key={cellIndex}>
+                          <Input
+                            value={cell}
+                            onChange={(e) => handleCellEdit(rowIndex, cellIndex, e.target.value)}
+                            className="w-full"
+                          />
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <Button variant="destructive" size="icon" onClick={() => deleteRow(rowIndex)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="mt-6 flex justify-between">
+              <Button onClick={addRow} variant="outline">
+                <Plus className="mr-2 h-4 w-4" /> Add Row
+              </Button>
+              <Button onClick={downloadCSV} variant="default">
+                <Download className="mr-2 h-4 w-4" /> Download CSV
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
